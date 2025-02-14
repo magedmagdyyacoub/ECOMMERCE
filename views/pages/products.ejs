@@ -1,0 +1,30 @@
+<%- include('../layouts/header') %>
+<main>
+  <h2>All Products</h2>
+  <section class="products-section">
+    <div class="products-grid">
+      <% products.forEach(product => { %>
+        <div class="product-item">
+          <div class="product-image-container">
+            <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" class="product-image">
+          </div>
+          <div class="product-info">
+            <h3><%= product.name %></h3>
+            <p class="product-price">$<%= product.price %></p>
+            <div class="product-buttons">
+              <a href="/product/<%= product.id %>" class="btn btn-view">View Product</a>
+              <form action="/cart/add/<%= product.id %>" method="POST">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="btn btn-cart">Add to Cart</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </section>
+  <div class="center-button">
+    <a href="/products?offset=<%= offset %>" class="more-products-button">More Products</a>
+  </div>
+</main>
+<%- include('../layouts/footer') %>

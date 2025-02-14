@@ -1,0 +1,29 @@
+<%- include('../layouts/header') %>
+<main>
+  <h2><%= category.name %></h2>
+  <section class="category-products-section">
+    <% if (category.Products.length > 0) { %>
+      <div class="category-products-grid">
+        <% category.Products.forEach(product => { %>
+          <div class="category-product-item">
+            <div class="category-product-image-container">
+              <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" class="category-product-image">
+            </div>
+            <div class="category-product-info">
+              <h3><%= product.name %></h3>
+              <p class="product-price">$<%= product.price %></p>
+              <form action="/cart/add/<%= product.id %>" method="POST">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="btn btn-cart">Add to Cart</button>
+              </form>
+              <a href="/product/<%= product.id %>" class="btn btn-view">View Product</a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p>No products found in this category.</p>
+    <% } %>
+  </section>
+</main>
+<%- include('../layouts/footer') %>

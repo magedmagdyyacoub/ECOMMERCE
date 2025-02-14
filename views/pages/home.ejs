@@ -1,0 +1,19 @@
+<%- include('../layouts/header') %>
+<%- include('../layouts/carousel') %>
+<main class="welcome-section">
+  <% if (user) { %>
+    <h1 class="welcome-message">Welcome, <%= user.username %>!</h1>
+  <% } else { %>
+    <h1 class="welcome-message">Welcome, Guest!</h1>
+  <% } %>
+  <h2 class="shopper-title">Shop Smart, Live Better</h2>
+  <p class="shopper-description">Discover Deals, Delight in Savings</p>
+</main>
+
+<%- include('../layouts/categories', { categories: categories }) %>
+<div class="center-button">
+  <a href="/more-categories?offset=4" class="more-categories-button">More Categories</a>
+</div>
+<%- include('../layouts/mostSelling', { products: mostSellingProducts }) %>
+<%- include('../layouts/justArrived', { products: justArrivedProducts }) %>
+<%- include('../layouts/footer') %>

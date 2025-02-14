@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Show Product</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .product-details {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .product-details img {
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+
+        .product-details p {
+            font-size: 18px;
+            color: #555;
+            margin: 5px 0;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #28a745;
+        }
+
+        .back-link:hover {
+            color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Details</h1>
+        <div class="product-details">
+            <img src="/uploads/<%= product.image %>" alt="<%= product.name %>">
+            <p><strong>Name:</strong> <%= product.name %></p>
+            <p><strong>Description:</strong> <%= product.description %></p>
+            <p><strong>Price:</strong> $<%= product.price %></p>
+            <p><strong>Category:</strong> <%= product.Category.name %></p>
+        </div>
+        <a href="/adminpanel/products" class="back-link">Back to Products</a>
+    </div>
+</body>
+</html>

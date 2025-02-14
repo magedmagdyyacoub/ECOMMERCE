@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        form input,
+        form select,
+        form button {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        form button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #218838;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th,
+        table td {
+            text-align: left;
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .actions a {
+            text-decoration: none;
+            padding: 5px 10px;
+            margin-right: 5px;
+            border-radius: 5px;
+            color: #fff;
+        }
+
+        .actions .show {
+            background-color: #007bff;
+        }
+
+        .actions .edit {
+            background-color: #ffc107;
+        }
+
+        .actions .delete {
+            background-color: #dc3545;
+        }
+
+        .actions a:hover {
+            opacity: 0.8;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            color: #333;
+        }
+
+        .pagination a.active {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .pagination a:hover {
+            background-color: #218838;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Management</h1>
+        <a href="/adminpanel">Back to Admin Panel</a>
+        <form action="/adminpanel/products/add" method="POST" enctype="multipart/form-data">
+            <input type="text" name="name" placeholder="Product Name" required>
+            <textarea name="description" placeholder="Product Description"></textarea>
+            <input type="number" name="price" placeholder="Product Price" required>
+            <select name="categoryId" required>
+                <% categories.forEach(category => { %>
+                <option value="<%= category.id %>"><%= category.name %></option>
+                <% }) %>
+            </select>
+            <input type="file" name="image">
+            <button type="submit">Add Product</button>
+        </form>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% products.forEach(product => { %>
+                <tr>
+                    <td><%= product.id %></td>
+                    <td><%= product.name %></td>
+                    <td><%= product.description %></td>
+                    <td><%= product.price %></td>
+                    <td><%= product.Category.name %></td>
+                    <td><img src="/uploads/<%= product.image %>" alt="<%= product.name %>" width="50"></td>
+                    <td class="actions">
+                        <a href="/adminpanel/products/show/<%= product.id %>" class="show">Show</a>
+                        <a href="/adminpanel/products/edit/<%= product.id %>" class="edit">Edit</a>
+                        <a href="/adminpanel/products/delete/<%= product.id %>" class="delete">Delete</a>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="?page=<%= i %>" class="<%= i === page ? 'active' : '' %>"><%= i %></a>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<section class="just-arrived-section">
+  <h2>Most Selling</h2>
+  <div class="just-arrived-grid">
+    <% products.forEach(product => { %>
+      <div class="just-arrived-item">
+        <div class="just-arrived-image-container">
+          <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" class="product-image">
+        </div>
+        <div class="just-arrived-info">
+          <h3><%= product.name %></h3>
+          <p class="product-price">$<%= product.price %></p>
+          <div class="product-buttons">
+            <a href="/product/<%= product.id %>" class="btn btn-view">View Product</a>
+            <form action="/cart/add/<%= product.id %>" method="POST">
+              <input type="hidden" name="quantity" value="1">
+              <button type="submit" class="btn btn-cart">Add to Cart</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</section>

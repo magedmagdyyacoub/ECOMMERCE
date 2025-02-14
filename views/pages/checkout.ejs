@@ -1,0 +1,242 @@
+<%- include('../layouts/header') %>
+
+<section class="checkout">
+  <div class="container">
+    <h1>Checkout</h1>
+
+    <!-- Order Summary -->
+    <div class="cart-summary">
+      <h3>Order Summary</h3>
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% let grandTotal = 0; %>
+          <% cartItems.forEach(item => { %>
+            <tr>
+              <td><%= item.Product.name %></td>
+              <td>$<%= item.Product.price %></td>
+              <td><%= item.quantity %></td>
+              <td><%= (item.Product.price * item.quantity).toFixed(2) %></td>
+            </tr>
+            <% grandTotal += item.Product.price * item.quantity; %>
+          <% }) %>
+        </tbody>
+      </table>
+      <p><strong>Total:</strong> $<%= cartItems.reduce((total, item) => total + item.Product.price * item.quantity, 0).toFixed(2) %></p>
+    </div>
+
+    <!-- Shipping Information -->
+    <div class="shipping-info">
+      <h3>Shipping Information</h3>
+      <form action="/checkout/payment" method="POST" id="payment-form">
+        <input type="hidden" name="cartItems" value='<%- JSON.stringify(cartItems) %>' />
+        <input type="hidden" name="totalAmount" value="<%= grandTotal %>">
+
+        <!-- Advanced Design for Shipping Information -->
+        <div class="form-group">
+          <label for="name" class="form-label">Full Name</label>
+          <input type="text" id="name" name="name" class="form-control form-control-advanced" required />
+        </div>
+
+        <div class="form-group">
+          <label for="address" class="form-label">Address</label>
+          <input type="text" id="address" name="address" class="form-control form-control-advanced" required />
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" id="email" name="email" class="form-control form-control-advanced" required 
+                 pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" />
+        </div>
+
+        <div class="form-group">
+          <label for="phone" class="form-label">Phone</label>
+          <input type="tel" id="phone" name="phone" class="form-control form-control-advanced" required 
+                 pattern="[0-9]{10,15}" />
+        </div>
+
+        <!-- Payment Information -->
+        <div class="payment-info">
+          <h3>Payment Information</h3>
+          <div class="payment-method">
+            <input type="radio" id="payment-card" name="payment-method" value="card" checked>
+            <label for="payment-card" class="form-label">Credit/Debit Card</label>
+          </div>
+          <!-- Card Payment Section -->
+          <div id="card-payment-section" class="payment-section">
+            <div id="card-element"></div>
+          </div>
+
+          <div class="payment-method">
+            <input type="radio" id="payment-paypal" name="payment-method" value="paypal">
+            <label for="payment-paypal" class="form-label">PayPal</label>
+          </div>
+          <!-- PayPal Payment Section -->
+          <div id="paypal-payment-section" class="payment-section" style="display: none;">
+            <div class="form-group">
+              <label for="paypal-email" class="form-label">PayPal Email</label>
+              <input type="email" id="paypal-email" name="paypal-email" class="form-control form-control-advanced" required 
+                     pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" />
+            </div>
+            <div id="paypal-button-container"></div>
+          </div>
+
+          <div class="payment-method">
+            <input type="radio" id="payment-cash" name="payment-method" value="cash">
+            <label for="payment-cash" class="form-label">Cash on Delivery</label>
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-advanced">Submit Payment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Stripe and PayPal Payment Scripts -->
+<script src="https://js.stripe.com/v3/"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const stripe = Stripe('pk_test_51PfQr5AJVDaohswDpAxCMonl1nQYZ223ycxaXelAI59KrntiHKYn2e1d1G3Eagw892mrc4Dk4wHZQZ2a2tw5a4Mj00SqyYljCe');
+    const elements = stripe.elements();
+    const cardElement = elements.create('card');
+    cardElement.mount('#card-element');
+
+    const form = document.getElementById('payment-form');
+    const cardPaymentSection = document.getElementById('card-payment-section');
+    const paypalPaymentSection = document.getElementById('paypal-payment-section');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+      const totalAmount = document.querySelector('input[name="totalAmount"]').value;
+
+      if (paymentMethod === 'card') {
+        const name = document.getElementById('name').value.trim();
+        if (!name) {
+          alert('Please enter your full name.');
+          return;
+        }
+        try {
+          const response = await fetch('/checkout/payment-intent', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ totalAmount })
+          });
+          const { clientSecret } = await response.json();
+          const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+              card: cardElement,
+              billing_details: { name }
+            }
+          });
+          if (error) {
+            console.error('Payment failed:', error.message);
+            alert('Payment failed: ' + error.message);
+          } else if (paymentIntent.status === 'succeeded') {
+            alert('Payment successful!');
+            window.location.href = '/checkout/confirmation';
+          }
+        } catch (error) {
+          console.error('Error processing payment:', error);
+          alert('An error occurred. Please try again.');
+        }
+      } else if (paymentMethod === 'paypal') {
+        paypal.Buttons({
+          createOrder: (data, actions) => {
+            return actions.order.create({
+              purchase_units: [{
+                amount: {
+                  value: totalAmount
+                }
+              }]
+            });
+          },
+          onApprove: (data, actions) => {
+            return actions.order.capture().then(details => {
+              alert('Payment successful!');
+              window.location.href = '/checkout/confirmation';
+            });
+          },
+          onError: (err) => {
+            console.error('Payment failed:', err);
+            alert('Payment failed: ' + err);
+          }
+        }).render('#paypal-button-container');
+      } else if (paymentMethod === 'cash') {
+        alert('Order placed! Please prepare the cash for payment on delivery.');
+        form.submit();
+      }
+    });
+
+    document.querySelectorAll('input[name="payment-method"]').forEach(input => {
+      input.addEventListener('change', (event) => {
+        if (event.target.value === 'card') {
+          cardPaymentSection.style.display = 'block';
+          paypalPaymentSection.style.display = 'none';
+        } else if (event.target.value === 'paypal') {
+          cardPaymentSection.style.display = 'none';
+          paypalPaymentSection.style.display = 'block';
+        } else {
+          cardPaymentSection.style.display = 'none';
+          paypalPaymentSection.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+/* Advanced styling for form elements */
+.container {
+  max-width: 800px;
+  margin: auto;
+}
+
+.form-label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.form-control-advanced {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.btn-advanced {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.btn-advanced:hover {
+  background-color: #0056b3;
+}
+
+.payment-method {
+  margin-bottom: 1rem;
+}
+
+.payment-section {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+</style>
+<%- include('../layouts/footer') %>

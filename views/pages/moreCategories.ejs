@@ -1,0 +1,20 @@
+<%- include('../layouts/header') %>
+<main>
+  <h2>More Categories</h2>
+  <section class="categories-section">
+    <div class="categories-grid">
+      <% categories.forEach(category => { %>
+        <div class="category-item">
+          <a href="/categories/<%= category.id %>">
+            <img src="/uploads/<%= category.image %>" alt="<%= category.name %>" class="category-image">
+            <div class="category-info">
+              <h3><%= category.name %></h3>
+            </div>
+          </a>
+        </div>
+      <% }) %>
+    </div>
+  </section>
+  <a href="/more-categories?offset=<%= offset %>" class="more-categories-button">More Categories</a>
+</main>
+<%- include('../layouts/footer') %>

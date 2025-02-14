@@ -1,0 +1,32 @@
+<%- include('../layouts/header', { title: 'Order Confirmation' }) %>
+
+<section class="order-confirmation">
+  <div class="container">
+    <h1>Order Confirmation</h1>
+    <p>Thank you for your order! Your payment has been successfully processed.</p>
+    <h3>Order Summary</h3>
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% cartItems.forEach(item => { %>
+          <tr>
+            <td><%= item.name %></td>
+            <td>$<%= item.price %></td>
+            <td><%= item.quantity %></td>
+            <td>$<%= item.price * item.quantity %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <p><strong>Total:</strong> $<%= cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2) %></p>
+  </div>
+</section>
+
+<%- include('../layouts/footer') %>

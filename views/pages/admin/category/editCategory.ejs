@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Category</title>
+</head>
+<body>
+    <h1>Edit Category</h1>
+    <form action="/adminpanel/categories/edit/<%= category.id %>" method="POST" enctype="multipart/form-data">
+        <input type="text" name="name" value="<%= category.name %>" required>
+        <input type="file" name="image">
+        <input type="hidden" name="existingImage" value="<%= category.image %>">
+        <button type="submit">Update Category</button>
+    </form>
+</body>
+</html>

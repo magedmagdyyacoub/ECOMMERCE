@@ -1,0 +1,59 @@
+<%- include('../layouts/header') %>
+
+<section class="shopping-cart">
+  <div class="container">
+    <h1>Your Shopping Cart</h1>
+    
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody id="cart-items">
+        <% cartItems.forEach(item => { %>
+          <tr>
+            <td>
+              <div class="product-info">
+                <img src="/uploads/<%= item.Product.image %>" alt="<%= item.Product.name %>" class="product-image">
+                <span><%= item.Product.name %></span>
+              </div>
+            </td>
+            <td>$<%= item.Product.price %></td>
+            <td>
+              <div class="quantity-controls">
+                <form action="/cart/decrease/<%= item.id %>" method="POST" class="quantity-form">
+                  <button type="submit" class="btn-quantity">-</button>
+                </form>
+                <span><%= item.quantity %></span>
+                <form action="/cart/increase/<%= item.id %>" method="POST" class="quantity-form">
+                  <button type="submit" class="btn-quantity">+</button>
+                </form>
+              </div>
+            </td>
+            <td>$<%= (item.Product.price * item.quantity).toFixed(2) %></td>
+            <td>
+              <form action="/cart/remove/<%= item.id %>" method="POST" class="remove-form">
+                <button type="submit" class="btn-remove">Remove</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <div class="cart-summary">
+      <p><strong>Total:</strong> $<%= cartItems.reduce((total, item) => total + item.Product.price * item.quantity, 0).toFixed(2) %></p>
+      <form action="/checkout" method="GET">
+        <input type="hidden" name="orderId" value="<%= order ? order.id : '' %>">
+        <button type="submit" class="btn btn-checkout">Proceed to Checkout</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<%- include('../layouts/footer') %>

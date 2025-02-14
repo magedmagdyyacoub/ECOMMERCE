@@ -1,0 +1,22 @@
+<%- include('../layouts/header') %>
+<main>
+  <h2><%= product.name %></h2>
+  <section class="product-details-section">
+    <div class="product-details">
+      <div class="product-image-container">
+        <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" class="product-image">
+      </div>
+      <div class="product-info">
+        <h3>Description</h3>
+        <p><%= product.description %></p>
+        <p class="product-price">$<%= product.price %></p>
+        <p class="product-category">Category: <%= product.Category.name %></p>
+        <form action="/cart/add/<%= product.id %>" method="POST">
+          <input type="hidden" name="quantity" value="1">
+          <button type="submit" class="btn btn-cart">Add to Cart</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+<%- include('../layouts/footer') %>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit User</title>
+</head>
+<body>
+    <h1>Edit User</h1>
+    <form action="/adminpanel/users/edit/<%= user.id %>" method="POST">
+        <input type="text" name="username" value="<%= user.username %>" required>
+        <input type="password" name="password" value="<%= user.password %>" required>
+        <input type="text" name="role" value="<%= user.role %>" required>
+        <button type="submit">Update User</button>
+    </form>
+</body>
+</html>
